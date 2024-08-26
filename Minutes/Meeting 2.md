@@ -20,7 +20,10 @@ NILL
 
 ## Previous Action Items:
 
-NILL
+- Planned and brainstormed the design (structure)
+- Created group chat
+- Allocated tasks
+- Worked on Lesson 2
 
 ## Minutes:
 
