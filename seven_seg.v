@@ -1,5 +1,6 @@
 module seven_seg (
     input      [3:0]  bcd,
+    input      [2:0] letter;
     output reg [6:0]  segments // Must be reg to set in always block!!
 );
 
@@ -19,16 +20,17 @@ module seven_seg (
         endcase   
     end
 
-    always @(difficulty)begin
-        case(letter)
-            E: segments = 7'b0000110;
-            A: segments = 7'b0001000;
-            S: segments = 7'b0010010;
-            Y: segments = 7'b0010001;
-            H: segments = 7'b0001001;
-            R: segments = 7'10011110;
-            D: segments = 7'b1000000;
-            L: segments = 7'b1000111;
+    always @(letter)begin
+        case (letter)
+            3'b000: segments = 7'b0000110; // E
+            3'b001: segments = 7'b0001000; // A
+            3'b010: segments = 7'b0010010; // S
+            3'b011: segments = 7'b0010001; // Y
+            3'b100: segments = 7'b0001001; // H
+            3'b101: segments = 7'10011110; // R
+            3'b110: segments = 7'b1000000; // D
+            3'b111: segments = 7'b1000111; // E
+            default: segments = 7'b1111111; // Turn off all segments
         endcase
     end
 
