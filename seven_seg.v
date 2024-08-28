@@ -16,10 +16,20 @@ module seven_seg (
             4'b1000: segments = 7'b0000000; // 8
             4'b1001: segments = 7'b0010000; // 9
             default: segments = 7'b1111111; // Turn off all segments
-
-        endcase
-        
+        endcase   
     end
 
+    always @(difficulty)begin
+        case(letter)
+            E: segments = 7'b0000110;
+            A: segments = 7'b0001000;
+            S: segments = 7'b0010010;
+            Y: segments = 7'b0010001;
+            H: segments = 7'b0001001;
+            R: segments = 7'10011110;
+            D: segments = 7'b1000000;
+            L: segments = 7'b1000111;
+        endcase
+    end
 
 endmodule
