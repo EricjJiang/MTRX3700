@@ -6,18 +6,15 @@ module led_switch_check (
     output reg [3:0] score          // 4-bit score output
 );
 
-    // Score update logic
-    always_ff @(posedge clk or posedge reset) begin
-        if (reset) begin
-            score <= 4'b0000; // Reset score to 0
-        end 
-        else begin
-            for (int i = 0; i < 18; i++) begin
-                if (leds[i] && switches[i]) begin
-                    score <= score + 1; // Increment score if switch and corresponding LED are on
-                end
-            end
-        end
-    end
 
+	 // Sequential : Create flip-flop to store state variable:
+    always @(posedge clk) begin
+        if (reset) begin
+            score <= 4'b0000; //reset score to 0
+			end
+			else if (switches[3] ~^ leds[3]) begin 
+					score <= score + 1; 
+			end
+	 end
+  
 endmodule
