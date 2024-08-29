@@ -4,9 +4,9 @@
 
 ## Attendees:
 
-- Ethan Glynn []
-- Eric Jiang [510427575]
-- Lachlan Burnet []
+- Ethan Glynn
+- Eric Jiang
+- Lachlan Burnet
 
 
 ## Apologies:
