@@ -1,0 +1,91 @@
+`timescale 1ns/1ns /* This directive (`) specifies simulation <time unit>/<time precision>. */
+
+module timer #(
+    parameter MAX_MS = 2047,            // Maximum millisecond value
+    parameter CLKS_PER_MS = 50000/*Fill-in*/ // What is the number of clock cycles in a millisecond?
+) (
+    input                       clk,
+    input                       reset,
+    input                       up,
+    input  [$clog2(MAX_MS)-1:0] start_value, // What does the $clog2() function do here?
+    input                       enable,
+    output [$clog2(MAX_MS)-1:0] timer_value
+);
+
+    // Your code here!
+    reg [15:0] clk_count;
+    reg [$clog2(MAX_MS)-1:0] ms_value;
+    reg count_up;
+
+    always @( posedge clk )
+    begin
+        if ( reset == 1 )
+        begin
+            clk_count <= 0; // set the clk cycle counter to 0
+            if ( up == 1 )
+            begin
+                ms_value <= 0;
+                count_up <= 1;
+            end
+            else 
+            begin
+                ms_value <= start_value;
+                count_up <= 0;
+            end
+        end
+        else if ( enable == 1 )
+        begin
+            if ( clk_count >= CLKS_PER_MS -1 )
+            begin
+                clk_count <= 0;
+                if ( count_up == 1 )
+                begin
+                    ms_value <= ms_value + 1;
+                end
+                else 
+                begin
+                    ms_value <= ms_value - 1;
+                end
+            end
+            else 
+            begin
+                clk_count <= clk_count + 1;
+            end
+        end  
+    end
+        assign timer_value = ms_value;      
+
+
+endmodule
+
+    /*** Hints (Challenge: delete these hints): ***/
+        /*
+         * Define 2 count bit vectors, one for counting clock cycles and the other for counting milliseconds.
+         * Make sure that these vectors have an appropriate size given their respective maximum values!
+         *
+         * Define a register `count_up` to remember whether we should be counting up or down.
+         *
+         * Make a sequential logic always procedure:
+         *  If reset then:
+         *    Set the clock-cycle counter to zero.
+         *    If up is high:
+         *      Set the millisecond counter to 0,
+         *      Set count_up to high.
+         *    Else:
+         *      Set the millisecond counter to start_value,
+         *      Set count_up to low.
+         *  Else if enable then:
+         *    If the clock cycle counter is `CLKS_PER_MS - 1` or greater:
+         *      Set clock cycle counter back to 0,
+         *      If count_up is high:
+         *        Increment the millisecond counter.
+         *      Else:
+         *        Decrement the millisecond counter.
+         *    Else:
+         *      Increment the clock cycle counter by 1.
+         *
+         * Continuously assign timer_value to your milliseconds timer.
+         *
+         * Note: `CLKS_PER_MS` is the number of clock cycles in a millisecond - calculate this number.
+         */
+

@@ -1,0 +1,53 @@
+//module tb_rng;
+//
+//    // Testbench signals
+//    reg clk;
+//    reg reset;
+//    reg trigger;
+//    wire [4:0] random_value;
+//    wire [17:0] led;
+//
+//    // Instantiate the rng module
+//    rng uut (
+//        .clk(clk),
+//        .reset(reset),
+//        .trigger(trigger),
+//        .random_value(random_value),
+//        .led(led)
+//    );
+//
+//    // Clock generation
+//    always begin
+//        #5 clk = ~clk; // Toggle clock every 5 time units
+//    end
+//
+//    // Test sequence
+//    initial begin
+//        // Initialize signals
+//        clk = 0;
+//        reset = 0;
+//        trigger = 0;
+//
+//        // Apply reset
+//        reset = 1;
+//        #10;
+//        reset = 0;
+//        #10;
+//
+//        // Trigger the RNG and observe outputs
+//        trigger = 1;
+//        #50; // Wait for a few clock cycles
+//
+//        trigger = 0;
+//        #50; // Wait for a few more clock cycles
+//
+//        // End simulation
+//        $finish;
+//    end
+//
+//    // Monitor signals
+//    initial begin
+//        $monitor("Time = %0t | random_value = %d | led = %b", $time, random_value, led);
+//    end
+//
+//endmodule

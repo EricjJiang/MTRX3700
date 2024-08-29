@@ -1,0 +1,100 @@
+module reaction_time_fsm #(
+    parameter MAX_MS=2047    
+)(
+    input                             clk,
+    input                             button_pressed,
+    input        [$clog2(MAX_MS)-1:0] timer_value,
+    output logic                      reset,
+    output logic                      up,
+    output logic                      enable,
+    output logic                      led_on
+);
+
+    // Edge detection block here!
+    logic button_q0, button_edge;
+    always_ff @(posedge clk) begin : edge_detect
+        button_q0 <= button_pressed;
+    end : edge_detect
+    assign button_edge = (button_pressed > button_q0);
+
+    // State typedef enum here! (See 3.1 code snippets)
+    typedef enum logic [2:0] {
+        S0,  // Initial state
+        S1,  // Timer waiting
+        S2,  // Button pressed, LED on
+        S3   // Ready to restart
+    } state;
+
+    state current_state, next_state; 
+    
+    // always_comb for next_state_logic here! (See 3.1 code snippets)
+    always_comb begin : next_state_logic
+        next_state = current_state; // Default Value for next_state
+        case (current_state)
+            S0: begin
+                next_state = (button_edge) ? S1 : S0;  // Use enum for state variable.
+            end
+            S1: begin
+                next_state = (timer_value == 0) ? S2 : S1;
+            end
+            S2: begin
+                next_state = (button_edge) ? S3 : S2;
+            end
+            S3: begin
+                next_state = (button_edge) ? S0 : S3;
+            end
+            default: begin
+                next_state = S0;
+            end
+        endcase
+    end : next_state_logic
+
+    // always_ff for FSM state variable flip-flops here! (See 3.1 code snippets)
+    always_ff @(posedge clk) begin : reaction_time_fsm_ff
+        // set the next state
+        current_state <= next_state;
+    end
+
+    // Continuously assign outputs here! (See 3.1 code snippets)
+    always_comb begin : output_assignments
+        // Default values for outputs
+        reset = 0;
+        up = 0;
+        enable = 0;
+        led_on = 0;
+
+        case (current_state)
+            S0: begin
+                reset = 1;
+                up = 0;
+                enable = 0;
+                led_on = 0;
+            end
+            S1: begin
+                reset = (timer_value == 0);
+                up = 1;
+                enable = 1;       // Keep the timer enabled
+                led_on = 0;           // Timer counts down
+            end
+            S2: begin
+                reset = 0;
+                up = 0;
+                enable = 1;
+                led_on = 1;       // Turn the LED on
+            end
+            S3: begin
+                reset = 0;
+                up = 0;
+                enable = 0;
+                led_on = 0;
+            end
+            default: begin
+                reset = 0;
+                up = 0;
+                enable = 0;
+                led_on = 0;
+            end
+        endcase
+    end
+
+endmodule
