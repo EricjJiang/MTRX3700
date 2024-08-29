@@ -4,11 +4,11 @@
 
 ## Attendees:
 
-- Ethan Glynn []
-- Eric Jiang [510427575]
-- Lachlan Burnet []
-- Raquel Kampel []
-- Viswada Varri []
+- Ethan Glynn 
+- Eric Jiang 
+- Lachlan Burnet 
+- Raquel Kampel 
+- Viswada Varri 
 
 
 ## Apologies:
