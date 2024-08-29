@@ -15,8 +15,8 @@ NILL
 
 ## Absences:
 
-- Raquel Kampel []
-- Viswada Varri []
+- Raquel Kampel
+- Viswada Varri 
 
 ## Previous Action Items:
 
