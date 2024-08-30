@@ -1,44 +1,48 @@
 module debounce #(
-  parameter DELAY_COUNTS = 2500 // 50us with clk period 20ns is 2500 counts
+  parameter DELAY_COUNTS = 2500
 ) (
-    input clk, button,
-    output reg button_pressed
+  input clk, button,
+  output reg button_pressed
 );
 
   // Use a synchronizer to synchronize `button`.
-  wire button_sync; // Output of the synchronizer. Input to your debounce logic.
-  synchroniser button_synchroniser (.clk(clk), .x(button), .y(button_sync));
+  wire button_sync;
+  synchroniser button_synchroniser (
+    .clk(clk),
+    .x(button),
+    .y(button_sync)
+  );
 
-  reg [12:0] count; // 13-bit counter to count up to DELAY_COUNTS
-  reg prev_button; // To hold the previous state of the button
+  // Declare and initialize registers
+  reg [11:0] count = 0;
+  reg prev_button = 0;
 
-  // Set the count flip-flop:
-  always @(posedge clk) begin
-      if (button_sync != prev_button) begin // If button isn't held up/down reset count
-        count <= 0;
-      end
-      else if (count == DELAY_COUNTS) begin // Reset counter when it is full
-        count <= 0;
-      end
-      else begin
-        count <= count + 1; // Increment count as long as button is held and delay is insufficient
-      end
-  end
-
-  // Set the prev_button flip-flop:
+  // Set the count flip-flop
   always @(posedge clk) begin
     if (button_sync != prev_button) begin
-      prev_button <= button_sync; // always set previous button to current press
+      count <= 0;
+    end else if (count == DELAY_COUNTS) begin
+      count <= count; // Hold the count value
+    end else begin
+      count <= count + 1;
     end
   end
 
-  // Set the button_pressed flip-flop:
+  // Set the prev_button flip-flop
   always @(posedge clk) begin
-    if (button_sync == prev_button && count == DELAY_COUNTS) begin // If button has been held for sufficient time
-      button_pressed <= ~button_pressed; // Invert button_pressed status
+    if (button_sync != prev_button) begin
+      prev_button <= button_sync;
+    end else begin
+      prev_button <= prev_button;
     end
-    else if (button_sync != prev_button && count == DELAY_COUNTS + 1) begin // If button has been off for sufficient time
-      button_pressed <= ~button_pressed; 
+  end
+
+  // Set the button_pressed flip-flop
+  always @(posedge clk) begin
+    if (button_sync == prev_button && count == DELAY_COUNTS) begin
+      button_pressed <= prev_button;
+    end else begin
+      button_pressed <= button_pressed; // Hold the previous state
     end
   end
 
