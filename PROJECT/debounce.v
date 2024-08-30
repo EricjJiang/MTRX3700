@@ -43,7 +43,7 @@ module debounce #(
       button_pressed <= prev_button;
     end
     else begin
-      button_pressed <= button_pressed/;
+      button_pressed <= button_pressed;
     end
   end
 
