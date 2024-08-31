@@ -10,7 +10,7 @@ module timer_tb;
 
     timer DUT (
         .clk(clk), .reset(reset), .difficulty(difficulty), .end_value(end_value), .enable(enable),
-        .timer_value(timer_value)
+        .timer_value(timer_value), .end_reached(end_reached)
     );
 
     initial begin : clock_block
