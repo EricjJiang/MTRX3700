@@ -1,0 +1,33 @@
+`timescale 1ns/1ns
+
+module mole #(
+    parameter NUM_LEDS = 18  // Number of LEDs
+) (
+    input clk,
+    input reset,
+    input trigger,  // Signal to trigger a new random LED to light up
+    output reg [NUM_LEDS-1:0] led_output
+);
+    wire [$clog2(NUM_LEDS)-1:0] random_led;
+
+    // Instantiate the RNG module
+    rng #(
+        .OFFSET(0),
+        .MAX_VALUE(NUM_LEDS-1),
+        .SEED(9)
+    ) rng_inst (
+        .clk(clk),
+        .reset(reset),
+        .random_value(random_led)
+    );
+
+    // Light up a random LED when triggered
+    always @(posedge clk or posedge reset) begin
+        if (reset)
+            led_output <= 0;
+        else if (trigger) begin
+            led_output <= 0;  // Turn off all LEDs
+            led_output[random_led] <= 1;  // Light up the randomly selected LED
+        end
+    end
+endmodule
