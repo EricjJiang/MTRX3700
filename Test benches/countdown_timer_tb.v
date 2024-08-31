@@ -1,71 +1,59 @@
 `timescale 1ns / 1ps
 
 module countdown_timer_tb;
-
-    // Parameters
-    parameter MAX_MS = 3000;
-    parameter CLKS_PER_MS = 50000;
-
-    // Inputs
-    reg clk;
-    reg reset;
+    // Define test bench variables and clock
+    reg clk;        
+    reg reset;  
     reg enable;
+    wire [$clog2(MAX_MS)-1:0] timer_value; 
+    wire end_reached; 
 
-    // Outputs
-    wire [$clog2(MAX_MS)-1:0] timer_value;
-    wire end_reached;
-
-    // Instantiate Device Under Test:
-    countdown_timer DUT (
-        .MAX_MS(MAX_MS),
-        .CLKS_PER_MS(CLKS_PER_MS)
-    ) uut (
-        .clk(clk),
-        .reset(reset),
-        .enable(enable),
-        .timer_value(timer_value),
-        .end_reached(end_reached)
+    // Instantiate Device Under Test (DUT):
+    countdown_timer DUT ( 
+        .clk(clk), 
+        .reset(reset), 
+        .enable(enable), 
+        .timer_value(timer_value), 
+        .end_reached(end_reached) 
     );
+   
 
-    // Clock generation
-    always #10 clk = ~clk;  // Generate a clock with a period of 20ns (50 MHz)
+    // Toggle the clock variable every 10 time units to create a clock signal **with period = 20 time units**:
+    initial forever #10 clk = ~clk; 
 
-    initial begin
-        $dumpfile("waveform.vcd");  // Tell the simulator to dump variables into the 'waveform.vcd' file during the simulation.
-        $dumpvars();
-        
-        // Initialize Inputs
+    // Initial block to specify input values starting from time = 0. 
+    initial begin  
+        $dumpfile("waveform.vcd");  // Tell the simulator to dump variables into the 'waveform.vcd' file during the simulation. Required to produce a waveform .vcd file.
+        $dumpvars();                // Also required to tell simulator to dump variables into a waveform (with filename specified above).
+
+        // Initialize inputs
         clk = 0;
-        reset = 1;
-        enable = 0;
+        reset = 1; 
+        enable = 0; 
 
-        // Apply reset
-        #40;  
-        reset = 0;
-        #20;  
-
-        // Enable countdown and observe decrement
-        enable = 1;
-        #60000000; 
-        enable = 0;
-        #100;
-
-        // Apply reset during countdown
-        enable = 1;
-        #30000000; 
-        reset = 1;
+        // Deassert reset and enable the timer
         #20;
-        reset = 0;
-        #1000000; 
-        enable = 0;
-
-        // Run until end_reached
+        reset = 0;  
         enable = 1;
-        #150000000; 
-        enable = 0;
-        #100; 
 
-        $finish();  // Finish the simulation.
+        // Run the timer for a few cycles and then reset
+        repeat(5) begin
+            #100000; 
+            $display("Time: %0t | Timer Value: %0d | End Reached: %b", $time, timer_value, end_reached);
+        end
+
+        // Assert reset during operation
+        #20;
+        reset = 1;  
+        #20;
+        reset = 0;  
+
+        // Continue running the timer
+        repeat(5) begin
+            #100000; 
+            $display("Time: %0t | Timer Value: %0d | End Reached: %b", $time, timer_value, end_reached);
+        end
+
+        $finish(); 
     end
-
 endmodule
