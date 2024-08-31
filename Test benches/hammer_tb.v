@@ -10,8 +10,8 @@ module hammer_tb;
     wire hit;
     wire [11:0] hit_count;
 
-    // Instantiate the Unit Under Test (UUT)
-    hammer uut (
+    // Instantiate Device Under Test:
+    hammer DUT (
         .clk(clk),
         .reset(reset),
         .switches(switches),
