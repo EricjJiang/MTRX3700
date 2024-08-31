@@ -29,7 +29,7 @@ module difficulty_selector_tb;
             KEY1_debounced = 0;
             KEY2_debounced = 1;
             #10; 
-            $display("Test Case 1 - Easy: KEY0=%b, KEY1=%b, KEY2=%b, difficulty=%04b", 
+            $display("Easy: KEY0=%b, KEY1=%b, KEY2=%b, difficulty=%04b", 
                       KEY0_debounced, KEY1_debounced, KEY2_debounced, difficulty);
             
             // Press Medium (KEY1)
@@ -37,7 +37,7 @@ module difficulty_selector_tb;
             KEY1_debounced = 1;
             KEY2_debounced = 0;
             #10;
-            $display("Test Case 2 - Medium: KEY0=%b, KEY1=%b, KEY2=%b, difficulty=%04b", 
+            $display("Medium: KEY0=%b, KEY1=%b, KEY2=%b, difficulty=%04b", 
                       KEY0_debounced, KEY1_debounced, KEY2_debounced, difficulty);
             
             // Press Hard (KEY0)
@@ -45,7 +45,7 @@ module difficulty_selector_tb;
             KEY1_debounced = 0;
             KEY2_debounced = 0;
             #10;
-            $display("Test Case 3 - Hard: KEY0=%b, KEY1=%b, KEY2=%b, difficulty=%04b", 
+            $display("Hard: KEY0=%b, KEY1=%b, KEY2=%b, difficulty=%04b", 
                       KEY0_debounced, KEY1_debounced, KEY2_debounced, difficulty);
             
             // No button pressed
@@ -53,7 +53,7 @@ module difficulty_selector_tb;
             KEY1_debounced = 0;
             KEY2_debounced = 0;
             #10;
-            $display("Test Case 4 - None: KEY0=%b, KEY1=%b, KEY2=%b, difficulty=%04b", 
+            $display("None: KEY0=%b, KEY1=%b, KEY2=%b, difficulty=%04b", 
                       KEY0_debounced, KEY1_debounced, KEY2_debounced, difficulty);
 
             // All buttons pressed simultaneously
@@ -61,7 +61,7 @@ module difficulty_selector_tb;
             KEY1_debounced = 1;
             KEY2_debounced = 1;
             #10;
-            $display("Test Case 5 - All: KEY0=%b, KEY1=%b, KEY2=%b, difficulty=%04b", 
+            $display("All: KEY0=%b, KEY1=%b, KEY2=%b, difficulty=%04b", 
                       KEY0_debounced, KEY1_debounced, KEY2_debounced, difficulty);
         end
 
