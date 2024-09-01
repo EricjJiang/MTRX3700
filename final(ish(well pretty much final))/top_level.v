@@ -21,7 +21,7 @@ module top_level (
 	 wire mole_complete;
 	 wire [11:0] hit_count;
     wire [17:0] debounced_switches; // Debounced switches
-	 
+
     // Debounce all 18 switches
     genvar i;
     generate
@@ -33,7 +33,7 @@ module top_level (
             );
         end
     endgenerate
-	 
+
 	 //instantiate the debouncer
 	 debounce hard_debouncer(
 		  .clk(CLOCK_50),
@@ -47,7 +47,7 @@ module top_level (
 		  .x(play),
 		  .y(play_stable)  
 	 ); 
-	 
+
 	 //instantiate the debouncer
 	 debounce hard_debouncer1(
 		  .clk(CLOCK_50),
@@ -68,7 +68,7 @@ module top_level (
 		  .button(~KEY[2]),
 		  .button_pressed(KEY2_debounced)
 	 ); 
-	 
+
 	 button_change_latch (
 		.clk(CLOCK_50),
 		.rst_n(reset),
@@ -77,13 +77,13 @@ module top_level (
 		.button2(KEY2_debounced),
 		.difficulty(difficulty)
 	 );
-	 
+
 	 seven_seg difficulty_display(
 		.bcd(gameover_flag ? 6'b111111 : difficulty),
 		.segments(HEX7)
 	 );
-	 
-	 	 
+
+
 	 // Instantiate the countdown timer for the SETUP state
 	 countdown_timer countdown_timer(
 		  .clk(CLOCK_50),
@@ -92,7 +92,7 @@ module top_level (
 		  .timer_value(countdown_timer_value),
 		  .end_reached(countdown_complete)
 	 );
-	 
+
     // Instantiate the Timer
     timer mole_timer (
         .clk(CLOCK_50),
@@ -103,7 +103,7 @@ module top_level (
         .end_reached(mole_complete),
 		  .timer_value(timer_value)
     );
-    
+
     // Instantiate the FSM
     reaction_time_fsm fsm (
         .clk(CLOCK_50),
@@ -117,7 +117,7 @@ module top_level (
 		  .score(hit_count),
 		  .gameover_flag(gameover_flag)
     );
-    
+
     topRand mole_light (
         .clk(CLOCK_50),
         .reset(reset),
@@ -126,7 +126,7 @@ module top_level (
         .displayL(LEDR),
 		  .position(mole_position)
     );
-	 
+
 	// Instantiate the hammer module
 	hammer hammer_inst(
 		 .clk(CLOCK_50),
@@ -136,7 +136,7 @@ module top_level (
 		 .hit(hit),
 		 .hit_count(hit_count),
 	);
-	 
+
     // Instantiate the Display
     display timer_display (
         .clk(CLOCK_50),
@@ -147,7 +147,7 @@ module top_level (
         .display3(HEX3)
     );
 
-	 
+
 endmodule
 
 // additional modules
@@ -199,12 +199,12 @@ module countdown_timer #(
             if(count == CLKS_PER_MS - 1) begin
                 // Set clock counter back to 0
                 count <= 0;
-                
+
                 // Decrement timer_value
                 if (timer_value > 0) begin
                     timer_value <= timer_value - 1;
                 end
-                
+
                 // Raise end_reached flag when timer_value reaches 0
                 if (timer_value == 0) begin
                     end_reached <= 1;
@@ -296,9 +296,3 @@ module button_change_latch (
     end
 
 endmodule
-
-
-
-
- 
-
