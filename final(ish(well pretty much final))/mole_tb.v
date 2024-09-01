@@ -25,3 +25,5 @@ module mole_tb;
         // Finish simulation
         $finish();
     end
+
+endmodule
