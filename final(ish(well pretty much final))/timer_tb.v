@@ -2,13 +2,15 @@
 
 module timer_tb;
 
-    reg         clk, reset, up, enable;   // Need to use `reg` here (set in always block).
-    reg  [10:0] start_value;
-    wire [10:0] timer_value;
+    reg         clk, reset, enable;   // Need to use `reg` here (set in always block).
+	 reg	[1:0]	 difficulty;
+    reg  [11:0] end_value;
+    wire [11:0] timer_value;
+	 wire			 end_reached;
 
     timer DUT (
-        .clk(clk), .reset(reset), .up(up), .start_value(start_value), .enable(enable),
-        .timer_value(timer_value)
+        .clk(clk), .reset(reset), .difficulty(difficulty), .end_value(end_value), .enable(enable),
+        .timer_value(timer_value), .end_reached(end_reached)
     );
 
     initial begin : clock_block
@@ -31,59 +33,57 @@ module timer_tb;
 
         enable = 1'b1;     // Enable the timer module.
 
-        /** Test counting up to 3 ms **/
-        up     = 1'b1;
-        reset  = 1'b1;     // Reset counter to count upwards (as up = 1'b1).
-
+        /** Test counting up to 100ms on easy **/
+        difficulty = 0;		  // Set difficulty to lowest
+        reset  = 1'b1;		  // Reset counter to count upwards (as up = 1'b1).
+		  end_value = 100;     // Set timer to end at 100ms
+			
         #20;               // Wait 1 clock period to *clock* new values before deasserting `reset` (i.e. a reset pulse).
         reset  = 1'b0;     // Disable reset to start counting:
 
         #20;               // Wait a clock period to get the new timer_value value after deasserting `reset`.
         
-        // Print out the timer value over the next 3 milliseconds:
-        repeat(3) begin
+        // Print out the timer value over the next 100 milliseconds:
+        repeat(110) begin
             $display("t=%0d ns: timer_value=%0d", $time, timer_value);  // $time gets current simulation time.
             #1000000; // Wait 1 millisecond (1000000 ns)
         end
-        if (timer_value != 3) $warning("t=%0d ns: timer_value=%0d, but expected 3!",$time, timer_value);
+        if (end_reached == 1) $warning("Timer reached its end at timer_value=%0d.",timer_value);
 
         #500000; // Wait 0.5 milliseconds (500000 ns)
-
-        /** Test counting down from 7 ms to 5 ms **/
-        start_value = 7;
-        up          = 1'b0;
-        reset       = 1'b1; // Reset counter to count down from starting value 7.
-
-        #20;                // Wait 1 clock period to *clock* new values before deasserting `reset` (i.e. a reset pulse).
-        reset       = 1'b0; // Disable reset to start counting down from 7:
-        if (timer_value != 7) $warning("t=%0d ns: timer_value=%0d, but expected 7!",$time, timer_value);
-
-        #20;                // Wait a clock period to get the new timer_value value after deasserting `reset`.
-        
-        // Print out the timer value over the next 2 milliseconds:
-        $display("t=%0d ns: timer_value=%0d",$time, timer_value);  // $time gets current simulation time.
-        repeat(2) begin
-            #1000000; // Wait 1 millisecond
-            $display("t=%0d ns: timer_value=%0d",$time, timer_value); // Timer should count down from 7 ms to 5 ms.
+		  difficulty = 1; 	 // Set difficulty to medium
+		  reset = 1'b1;
+		  end_value = 100;    // Medium difficulty will reach 100ms in 50ms
+		  
+		  #20;
+		  reset = 1'b0;
+		  
+		  #20;
+		  
+		  repeat(100) begin
+            $display("t=%0d ns: timer_value=%0d", $time, timer_value);  // $time gets current simulation time.
+            #1000000; // Wait 1 millisecond (1000000 ns)
         end
-        if (timer_value != 5) $warning("t=%0d ns: timer_value=%0d, but expected 5!",$time, timer_value);
-
-        /** Test pausing the timer for 2 ms **/
-        enable = 1'b0;      // Disable the timer module, i.e. pause the timer.
-
-        #2000000;  // Wait 2 milliseconds (2000000 ns)
-
-        $display("t=%0d ns: timer_value=%0d", $time, timer_value); // Timer should have remained on previous value = 5 ms
-        if (timer_value != 5) $warning("t=%0d ns: timer_value=%0d, but expected 5!",$time, timer_value);
-        
-        enable = 1'b1;      // Enable the timer module, i.e. resume the timer.
-
-        #1500000;  // Wait 1.5 milliseconds (1500000 ns).
-
-        $display("t=%0d ns: timer_value=%0d", $time, timer_value); // Timer should resume counting down from 5 ms to 4 ms
-        if (timer_value != 4) $warning("t=%0d ns: timer_value=%0d, but expected 4!",$time, timer_value);
+        if (end_reached == 1) $warning("Timer reached its end at timer_value=%0d.",timer_value);
+		  
+		  #500000; // Wait 0.5 milliseconds (500000 ns)
+		  difficulty = 2; 	 // Set difficulty to hard
+		  reset = 1'b1;
+		  end_value = 100;	 // Hard difficulty will reach 100ms in ~33ms
+		  
+		  #20;
+		  reset = 1'b0;
+		  
+		  #20;
+		  
+		  repeat(100) begin
+            $display("t=%0d ns: timer_value=%0d", $time, timer_value);  // $time gets current simulation time.
+            #1000000; // Wait 1 millisecond (1000000 ns)
+        end
+        if (end_reached == 1) $warning("Timer reached its end at timer_value=%0d.",timer_value);
+		  #500000; // Wait 0.5 milliseconds (500000 ns)
 
         $finish();  // Finish the simulation.
-    end
+    end 
     
 endmodule

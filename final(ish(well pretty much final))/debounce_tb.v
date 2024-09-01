@@ -1,42 +1,49 @@
 module debounce_tb;
-    // Testbench Signals
-    reg clk;
-    reg button;
-    wire button_pressed;
 
-    // Instantiate the debounce module
-    debounce dut (
-        .clk(clk),
-        .button(button),
-        .button_pressed(button_pressed)
-    );
+  // Testbench signals
+  reg clk;
+  reg button;
+  wire button_pressed;
 
-    // Clock generation: 20ns clock period (50 MHz)
-    initial begin
-        clk = 0;
-        forever #10 clk = ~clk;
-    end
+  // Instantiate the synchroniser module
+  synchroniser button_synchroniser (
+    .clk(clk), 
+    .x(button), 
+    .y(button_sync)
+  );
 
-    // Test procedure
-    initial begin
-        $dumpfile("waveform.vcd");
-        $dumpvars();
-        // Initialize signals
-        button = 0;
+  // Instantiate the debounce module
+  debounce #(.DELAY_COUNTS(2500)) uut (
+    .clk(clk),
+    .button(button_sync),  // Pass synchronized button signal to debounce module
+    .button_pressed(button_pressed)
+  );
 
-        // Apply the first button press (bouncing scenario)
-        #100 button = 1;
-        #50  button = 0;  // Bouncing to 0 quickly
-        #50  button = 1;  // Button settles to 1
-        #50;
-        $display("button_pressed: %b", button_pressed);
+  // Clock generation
+  always #10 clk = ~clk; // 50 MHz clock (20 ns period)
 
-        //TODO:
-        // Wait enough time for debounce to trigger
-        // Apply the button release (another bouncing scenario)
-        // Wait enough time for debounce to trigger
+  // Testbench process
+  initial begin
+    // Initialize inputs
+    clk = 0;
+    button = 0;
 
-        $finish(); // End simulation
-    end
+    // Test sequence
+    #100 button = 1; // Press button
+    #50 button = 0; // Release button
+    #50050 button = 1; // Press button again
+    #50050 button = 0; // Release button
+
+    // Add more test cases as needed
+    
+    #1000 $stop; // Stop simulation
+  end
+
+  // Monitor changes for debugging
+  initial begin
+    $monitor("Time: %0t, Button: %b, Button_Sync: %b, Button_Pressed: %b", $time, button, button_sync, button_pressed);
+  end
 
 endmodule
+
+
